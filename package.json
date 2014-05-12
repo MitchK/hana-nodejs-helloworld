@@ -1,0 +1,7 @@
+{
+    "name": "hana-nodejs-hello-world",
+    "version": "1.0.0",
+    "dependencies": {
+        "hdb": "0.3.1"
+    }
+}
