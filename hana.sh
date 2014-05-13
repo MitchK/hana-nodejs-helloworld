@@ -6,6 +6,7 @@ function close {
     echo ""
 
     pkill java
+    
 }
 
 trap close EXIT
