@@ -1,14 +1,11 @@
 
 function close {
 
+    echo ""
     echo "Closing tunnel..."
+    echo ""
 
-	#echo -e "\n" >&"${COPROC[1]}"
-	#echo -e "y" >&"${COPROC[1]}"
-	
-	#echo $(read <&"${COPROC[0]}")
-	
-	pkill java
+    pkill java
 }
 
 trap close EXIT
