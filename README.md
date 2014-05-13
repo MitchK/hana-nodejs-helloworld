@@ -5,5 +5,5 @@
     
     chmod +x hana.sh
     
-    sh hana.sh node app.js
+    ./hana.sh node app.js
     
