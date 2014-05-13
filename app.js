@@ -3,7 +3,7 @@ var http = require('http')
   , hdb = require('hdb');
 
 // client
-var client = hdb.createClient({host: process.env.HANA_HOST, port: parseInt(process.env.HANA_PORT), user: process.env.HANA_USER, password: process.env.HANA_PASS});
+var client = hdb.createClient({host: process.env.HANAIO_HOST, port: parseInt(process.env.HANAIO_PORT), user: process.env.HANAIO_USER, password: process.env.HANAIO_PASS});
 
 // server
 http.createServer(function (req, res) {
