@@ -1,76 +1,91 @@
 
-if [ -z "$HANA_HOST" ]; then
-    echo "HANA_HOST is not defined"
+function close {
+
+    echo "Closing tunnel..."
+
+	#echo -e "\n" >&"${COPROC[1]}"
+	#echo -e "y" >&"${COPROC[1]}"
+	
+	#echo $(read <&"${COPROC[0]}")
+	
+	pkill java
+}
+
+trap close EXIT
+
+if [ -z "$HANAIO_HOST" ]; then
+    echo "HANAIO_HOST is not defined"
     exit 1
 fi
 
-if [ -z "$HANA_PORT" ]; then
-    echo "HANA_PORT is not defined"
+if [ -z "$HANAIO_PORT" ]; then
+    echo "HANAIO_PORT is not defined"
     exit 1
 fi
 
-if [ -z "$HANA_USER" ]; then
-    echo "HANA_USER is not defined"
+if [ -z "$HANAIO_USER" ]; then
+    echo "HANAIO_USER is not defined"
     exit 1
 fi
 
-if [ -z "$HANA_PASS" ]; then
-    echo "HANA_PASS is not defined"
+if [ -z "$HANAIO_PASS" ]; then
+    echo "HANAIO_PASS is not defined"
     exit 1
 fi
 
-if [ $HANA_HOST = "hanatrial.ondemand.com" ]; then
+if [ $HANAIO_HOST = "hanatrial.ondemand.com" ]; then
 
-    if [ -z "$HANA_ACCOUNT" ]; then
-        echo "HANA_ACCOUNT is not defined"
+    if [ -z "$HANAIO_ACCOUNT" ]; then
+        echo "HANAIO_ACCOUNT is not defined"
         exit 1
     fi
 
-    if [ -z "$HANA_PACKAGE" ]; then
-        echo "HANA_PACKAGE is not defined"
+    if [ -z "$HANAIO_PACKAGE" ]; then
+        echo "HANAIO_PACKAGE is not defined"
         exit 1
     fi
 
-    exec 3< <(neo.sh open-db-tunnel -h $HANA_HOST -u $HANA_USER -p $HANA_PASS -a $HANA_ACCOUNT -i $HANA_PACKAGE < /dev/null &)
+    coproc neo.sh open-db-tunnel -h $HANAIO_HOST -u $HANAIO_USER -p $HANAIO_PASS -a $HANAIO_ACCOUNT -i $HANAIO_PACKAGE
 
-    while read <&3 line; do
+    while read <&"${COPROC[0]}" line; do
 
         if [ "$line" = "Press ENTER to close the tunnel now." ]; then 
             break 
         fi
 
         if [ -n "$(echo $line | grep "Host name")" ]; then 
-            TMP_HANA_HOST=$(echo "$line" | grep "Host name" | cut -d':' -f2 | tr -d ' ')
+            TMP_HANAIO_HOST=$(echo "$line" | grep "Host name" | cut -d':' -f2 | tr -d ' ')
         fi
     
         if [ -n "$(echo $line | grep "User")" ]; then 
-            TMP_HANA_USER=$(echo "$line" | grep "User" | cut -d':' -f2 | tr -d ' ')
+            TMP_HANAIO_USER=$(echo "$line" | grep "User" | cut -d':' -f2 | tr -d ' ')
         fi
 
         if [ -n "$(echo $line | grep "Password")" ]; then 
-            TMP_HANA_PASS=$(echo "$line" | grep "Password" | cut -d':' -f2 | tr -d ' ')
+            TMP_HANAIO_PASS=$(echo "$line" | grep "Password" | cut -d':' -f2 | tr -d ' ')
         fi
 
         echo "$line"
-    
+
     done
 
-    TMP_HANA_PORT=$HANA_PORT
+    TMP_HANAIO_PORT=$HANAIO_PORT
 
 else
 
-    TMP_HANA_HOST=$HANA_HOST
-    TMP_HANA_PORT=$HANA_PORT
-    TMP_HANA_USER=$HANA_USER
-    TMP_HANA_PASS=$HANA_PASS
+    TMP_HANAIO_HOST=$HANAIO_HOST
+    TMP_HANAIO_PORT=$HANAIO_PORT
+    TMP_HANAIO_USER=$HANAIO_USER
+    TMP_HANAIO_PASS=$HANAIO_PASS
 
 fi
 
 echo ""
 echo "HANA.IO Executing $@"
-echo "HANA_HOST $TMP_HANA_HOST"
-echo "HANA_PORT $TMP_HANA_PORT"
-echo "HANA_USER $TMP_HANA_USER"
-echo "HANA_PASS $TMP_HANA_PASS"
+echo "HANAIO_HOST $TMP_HANAIO_HOST"
+echo "HANAIO_PORT $TMP_HANAIO_PORT"
+echo "HANAIO_USER $TMP_HANAIO_USER"
+echo "HANAIO_PASS $TMP_HANAIO_PASS"
+echo ""
 
-HANA_HOST=$TMP_HANA_HOST HANA_PORT=$TMP_HANA_PORT HANA_USER=$TMP_HANA_USER HANA_PASS=$TMP_HANA_PASS "$@"
+HANAIO_HOST=$TMP_HANAIO_HOST HANAIO_PORT=$TMP_HANAIO_PORT HANAIO_USER=$TMP_HANAIO_USER HANAIO_PASS=$TMP_HANAIO_PASS "$@"
